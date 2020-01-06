@@ -1,0 +1,55 @@
+﻿<Window x:Name="lyricsEchoWin" x:Class="MusicPlayerWithLyrics.LyricsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicPlayerWithLyrics"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="LyricsWindow" Height="400" Width="500"
+        ResizeMode="CanResizeWithGrip"
+          MinHeight="50" MinWidth="30" 
+         Background="{DynamicResource MaterialDesignPaper}" AllowsTransparency="True" WindowStyle="None" FontFamily="Microsoft YaHei">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style TargetType="{x:Type ResizeGrip}">
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ResizeGrip}">
+                            <Border Height="15" Width="15" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" >
+                                <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25" Width="25" Kind="ResizeBottomRight"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+
+
+        <materialDesign:ColorZone x:Name="titleBar" Mode="PrimaryLight" Height="50">
+            <Grid >
+                <Grid>
+                    <ToggleButton Margin="10,0,0,0" HorizontalAlignment="Left" Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
+                    <Grid Margin="50,0,100,0" MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
+                        <TextBlock Text="{Binding Title,ElementName=lyricsEchoWin}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Grid>
+                </Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <ToggleButton Height="50" Width="50" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="WindowSize" Padding="0" Click="ToggleButton_Click" IsThreeState="True">
+                        <materialDesign:PackIcon Kind="ImageSizeSelectSmall" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                    </ToggleButton>
+                    <Button Height="50" Width="50"  Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Close" Padding="0" Click="Close_Button_Click">
+                        <materialDesign:PackIcon Kind="CloseBoxOutline" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+        </materialDesign:ColorZone>
+        <ListBox x:Name="lyricsListBox" Margin="0,50,0,0" SelectionChanged="LyricsListBox_SelectionChanged" MouseMove="LyricsListBox_PreviewMouseMove" MouseWheel="LyricsListBox_PreviewMouseMove"/>
+        <!--<ScrollBar x:Name="lyricsListBoxScrollBar" Margin="0,50,0,0" HorizontalAlignment="Right"/>-->
+    </Grid>
+</Window>
