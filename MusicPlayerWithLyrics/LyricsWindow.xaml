@@ -30,26 +30,188 @@
     <Grid>
 
 
-        <materialDesign:ColorZone x:Name="titleBar" Mode="PrimaryLight" Height="50">
-            <Grid >
-                <Grid>
-                    <ToggleButton Margin="10,0,0,0" HorizontalAlignment="Left" Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
-                    <Grid Margin="50,0,100,0" MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
-                        <TextBlock Text="{Binding Title,ElementName=lyricsEchoWin}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Grid>
-                </Grid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <ToggleButton Height="50" Width="50" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="WindowSize" Padding="0" Click="ToggleButton_Click" IsThreeState="True">
-                        <materialDesign:PackIcon Kind="ImageSizeSelectSmall" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
-                    </ToggleButton>
-                    <Button Height="50" Width="50"  Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Close" Padding="0" Click="Close_Button_Click">
-                        <materialDesign:PackIcon Kind="CloseBoxOutline" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
-                    </Button>
-                </StackPanel>
-            </Grid>
-
-        </materialDesign:ColorZone>
-        <ListBox x:Name="lyricsListBox" Margin="0,50,0,0" SelectionChanged="LyricsListBox_SelectionChanged" MouseMove="LyricsListBox_PreviewMouseMove" MouseWheel="LyricsListBox_PreviewMouseMove"/>
+        <ListBox x:Name="lyricsListBox"  Margin="0,50,0,0" SelectionChanged="LyricsListBox_SelectionChanged" MouseMove="LyricsListBox_PreviewMouseMove" MouseWheel="LyricsListBox_PreviewMouseMove"/>
         <!--<ScrollBar x:Name="lyricsListBoxScrollBar" Margin="0,50,0,0" HorizontalAlignment="Right"/>-->
+        <Grid>
+            <materialDesign:DrawerHost  x:Name="drawerHost" IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}" IsTopDrawerOpen="{Binding ElementName=SettingToggleButton, Path=IsChecked}">
+                <Grid Height="{Binding ActualHeight, ElementName=root}" Width="{Binding ActualWidth, ElementName=root}">
+
+
+
+
+                    <materialDesign:ColorZone x:Name="titleBar" Mode="PrimaryDark" Height="50" Padding="2">
+                        <Grid >
+                            <Grid>
+                                <ToggleButton x:Name="MenuToggleButton"  Margin="10,0,0,0" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignHamburgerToggleButton}"  Cursor="Hand"/>
+                                <Grid Margin="50,0,100,0" MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
+                                    <TextBlock Text="{Binding Title,ElementName=lyricsEchoWin}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <ToggleButton Height="50" Width="50" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="WindowSize" Padding="0" Click="ToggleButton_Click" IsThreeState="True">
+                                    <materialDesign:PackIcon Kind="ImageSizeSelectSmall" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                                </ToggleButton>
+                                <Button Height="50" Width="50"  Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Close" Padding="0" Click="Close_Button_Click">
+                                    <materialDesign:PackIcon Kind="CloseBoxOutline" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                    </materialDesign:ColorZone>
+
+                </Grid>
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <Grid>
+                        <StackPanel Margin="16,0">
+                            <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" DockPanel.Dock="Top" HorizontalAlignment="Right" IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" Cursor="{Binding Cursor, ElementName=MenuToggleButton}" />
+                            <TextBlock Margin="4" HorizontalAlignment="Center" Text="Menu" />
+                            <Separator/>
+                            <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"  CommandParameter="{x:Static Dock.Top}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Settings" />
+                            <Button Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Close" />
+                        </StackPanel>
+                        <materialDesign:MaterialDateDisplay VerticalAlignment="Bottom" Margin="5,0,0,0" Opacity="0.5"/>
+                    </Grid>
+                </materialDesign:DrawerHost.LeftDrawerContent>
+                
+                
+                
+                <materialDesign:DrawerHost.TopDrawerContent>
+                 
+                    
+                    
+                    <Grid>
+
+
+
+
+
+
+
+
+
+
+
+                        <materialDesign:DialogHost x:Name="ColorChooseDialog" DialogClosing="Color_DialogHost_OnDialogClosing" HorizontalAlignment="Center" VerticalAlignment="Center" Height="{Binding ActualHeight, ElementName=lyricsEchoWin}">
+                            <materialDesign:DialogHost.DialogContent>
+                                <StackPanel Margin="16">
+                                    <TextBlock Text="Choose Font Color."/>
+                               <materialDesign:ColorPicker Margin="0,10,0,0" x:Name="FoneColorPicker" Height="200 " Width="200"  Grid.Column="1" />
+                                    <Separator/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">True</system:Boolean>
+                                            </Button.CommandParameter> ACCEPT
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">False</system:Boolean>
+                                            </Button.CommandParameter> CANCEL
+                                        </Button>
+                                    </StackPanel>
+                                    
+                                </StackPanel>
+                            </materialDesign:DialogHost.DialogContent>
+                            <Border BorderThickness="1" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Width="{Binding ActualWidth,ElementName=lyricsEchoWin}" ClipToBounds="True">
+                                <Grid Height="{Binding ActualHeight, ElementName=lyricsEchoWin}">
+
+                                    <StackPanel>
+                                        <Grid  MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
+                                            <TextBlock Margin="0,10,10,0" HorizontalAlignment="Center" Text="Settings" FontSize="20" Foreground="White"/>
+                                        </Grid>
+                                        <Separator/>
+                                        <ToolBarTray>
+                                            <ToolBar Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False">
+                                                <ListBox x:Name="LyricsParagraph" SelectedIndex="1" ToolTip="调整歌词水平对齐方式" SelectionChanged="LyricsParagraph_SelectionChanged">
+                                                    <ListBoxItem>
+                                                        <materialDesign:PackIcon Kind="FormatAlignLeft" />
+                                                    </ListBoxItem>
+                                                    <ListBoxItem>
+                                                        <materialDesign:PackIcon Kind="FormatAlignCenter" />
+                                                    </ListBoxItem>
+                                                    <ListBoxItem>
+                                                        <materialDesign:PackIcon Kind="FormatAlignRight" />
+                                                    </ListBoxItem>
+                                                    <!--<ListBoxItem><materialDesign:PackIcon Kind="FormatAlignJustify" /></ListBoxItem>-->
+                                                </ListBox>
+                                                <Separator />
+                                                <ListBox x:Name="FontStyle" SelectionMode="Extended" ToolTip ="文字样式" MouseUp="FontStyle_MouseUp">
+                                                    <ListBoxItem>
+                                                        <materialDesign:PackIcon Kind="FormatBold" />
+                                                    </ListBoxItem>
+                                                    <ListBoxItem>
+                                                        <materialDesign:PackIcon Kind="FormatItalic" />
+                                                    </ListBoxItem>
+                                                </ListBox>
+                                                <Separator />
+                                                <StackPanel ToolTip ="字体大小" Orientation="Horizontal">
+                                                    <Label Content="Font size:" VerticalAlignment="Center" />
+                                                    <ComboBox x:Name="ChooseFontSize" SelectionChanged="ChooseFontSize_SelectionChanged">
+                                                        <ComboBoxItem Content="12" IsSelected="True"/>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                                <Separator />
+                                                <Button Style="{StaticResource MaterialDesignIconButton}" Foreground="Black"  Click="OpenColorDialogButton">
+                                                    <Grid>
+                                                    <materialDesign:PackIcon Kind="FormatColorText" Height="30" Width="30"/>
+                                                    <materialDesign:PackIcon Kind="ColorHelper" Margin="3" Height="24" Width="24"/></Grid>
+                                                </Button>
+                                            </ToolBar>
+                                        </ToolBarTray>
+                                        <Separator/>
+                                        <ListBox SelectedIndex="0" Margin="16,0" x:Name="SettingStackPanel" SelectionChanged="SettingStackPanel_SelectionChanged">
+                                            <ListBoxItem x:Name="selectedLyricsStyle" FontSize="22" Content="selectLyricsStyle"/>
+                                            <ListBoxItem x:Name="defaultLyricsStyle" FontSize="12" Content="defaultLyricsStyle" />
+                                        </ListBox>
+                                     
+                                    </StackPanel>
+
+
+
+   <ToggleButton VerticalAlignment="Bottom"  Margin="16,0" x:Name="SettingToggleButton"  Width="{Binding ActualWidth, ElementName=SettingStackPanel}" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignFlatButton}"               Cursor="Hand" Height="25" Padding="0">
+                                            <TextBlock  FontSize="34" FontWeight="Black" Text="︿" Margin="0,-30"/>
+                                        </ToggleButton>
+
+
+
+
+
+
+
+
+
+
+
+
+                                </Grid>
+                            </Border>
+                        </materialDesign:DialogHost>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </Grid>
+                </materialDesign:DrawerHost.TopDrawerContent>
+
+            </materialDesign:DrawerHost>
+
+        </Grid>
     </Grid>
 </Window>

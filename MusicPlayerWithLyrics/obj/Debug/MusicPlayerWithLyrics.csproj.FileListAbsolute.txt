@@ -12,7 +12,6 @@ C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debu
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.g.resources
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.Properties.Resources.resources
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.csproj.GenerateResource.cache
-C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.csproj.CoreCompileInputs.cache
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.csproj.CopyComplete
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.exe
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.pdb

@@ -317,7 +317,16 @@ namespace MusicPlayerWithLyrics
                 {
                     foreach (var item in lyrics.LrcLines)
                     {
-                        var listBoxItem = new ListBoxItem() { Content = item.Value, Tag = item.Key };
+                        ListBoxItem listBoxItem = new ListBoxItem()
+                        {
+                            Content = item.Value,
+                            Tag = item.Key,
+                            FontStretch = lyrics.lyricsWindow.defaultLyricsStyle.FontStretch,
+                            FontSize = lyrics.lyricsWindow.defaultLyricsStyle.FontSize,
+                            FontWeight = lyrics.lyricsWindow.defaultLyricsStyle.FontWeight,
+                            FontStyle = lyrics.lyricsWindow.defaultLyricsStyle.FontStyle,
+                            Foreground = lyrics.lyricsWindow.defaultLyricsStyle.Foreground
+                        };
                         listBoxItem.MouseUp += Lyrics_ListBoxItem_MouseUp;
                         lyrics.lyricsWindow.lyricsListBox.Items.Add(listBoxItem);
                     }
@@ -329,7 +338,7 @@ namespace MusicPlayerWithLyrics
         {
             mediaElement.Position = (TimeSpan)((ListBoxItem)sender).Tag;
             foreach (var item in lyrics.Timers) { item.Stop(); }
-            lyrics.SelectLyrics(mediaElement.Position+TimeSpan.FromTicks(1), VarEls.timer.Interval);
+            lyrics.SelectLyrics(mediaElement.Position + TimeSpan.FromTicks(1), VarEls.timer.Interval);
             sliderPosition.Value = mediaElement.Position.TotalSeconds;
         }
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
