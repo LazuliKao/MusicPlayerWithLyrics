@@ -9,10 +9,15 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
+using System.Drawing;
+using FontStyle = System.Windows.FontStyle;
+using System.Windows.Media;
+using Color = System.Windows.Media.Color;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
 namespace MusicPlayerWithLyrics
 {
-    class Lyrics
+    class Lyrics : IDisposable
     {
         #region 信息输出
         #endregion
@@ -27,7 +32,42 @@ namespace MusicPlayerWithLyrics
         public string Author { get; set; } = "无信息"; //作词家
         public int Length { get; set; } = 0; //音乐的长度
         public string By { get; set; } = "无信息"; //LRC 作者
+        public LogOutput LogWindow { get; set; } = null;
+
         private List<TimeSpan> timeList = null; // 用于二进制导航的列表
+        public struct VarEls
+        {
+            public double selectedFontSize, defaultFontSize, desktopLine1FontSize, desktopLine2FontSize;
+            public FontStyle selectedFontStyle, defaultFontStyle, desktopLine1FontStyle, desktopLine2FontStyle;
+            public FontWeight selectedFontWeight, defaultFontWeight, desktopLine1FontWeight, desktopLine2FontWeight;
+            public SolidColorBrush selectedFontColor, defaultFontColor, desktopLine1FontColor, desktopLine2FontColor;
+
+            public HorizontalAlignment HorizontalContentAlignment;
+        }
+        public VarEls Settings = new VarEls
+        {
+            selectedFontSize = 18,
+            selectedFontStyle = FontStyles.Normal,
+            selectedFontWeight = FontWeights.Normal,
+            selectedFontColor = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+
+            defaultFontSize = 18,
+            defaultFontStyle = FontStyles.Normal,
+            defaultFontWeight = FontWeights.Normal,
+            defaultFontColor = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+
+            desktopLine1FontSize = 18,
+            desktopLine1FontStyle = FontStyles.Normal,
+            desktopLine1FontWeight = FontWeights.Normal,
+            desktopLine1FontColor = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+
+            desktopLine2FontSize = 18,
+            desktopLine2FontStyle = FontStyles.Normal,
+            desktopLine2FontWeight = FontWeights.Normal,
+            desktopLine2FontColor = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+
+            HorizontalContentAlignment = HorizontalAlignment.Center
+        };
 
         public bool Load(Uri uri)
         {
@@ -60,7 +100,7 @@ namespace MusicPlayerWithLyrics
                             LrcLines.Add(time, item.Substring(start + 1));
                         }
                     }
-                    catch (Exception err) { WriteErrLog(err.Message); }
+                    catch (Exception err) { WriteErrLog(err.ToString()); }
 
                 }
                 timeList = LrcLines.Keys.ToList();
@@ -73,27 +113,30 @@ namespace MusicPlayerWithLyrics
             return HaveLrc;
         }
         public LyricsWindow lyricsWindow = null;
-
         public void CloseLRCWindow(object sender, EventArgs e) { CloseWindow(); }
         public void CloseWindow()
         {
             lyricsWindow.Close();
             lyricsWindow = null;
         }
-
         public List<DispatcherTimer> Timers = new List<DispatcherTimer>();
         public void SelectLyrics(TimeSpan lyricsTime, TimeSpan cycle)
         {
+            ChooseDesktopLyrics(lyricsTime, cycle);
             try
             {
                 if (lyricsWindow != null && HaveLrc && timeList != null)
                 {
-                    SwitchtoIndex(
-                        timeList.IndexOf(
-                        timeList.LongCount(lambda => lambda > lyricsTime) == 0
-                        ? timeList.Last()
-                       : timeList.Last(lambda => lambda < lyricsTime)
+                    try
+                    {
+                        SwitchtoIndex(
+                                                timeList.IndexOf(
+                                                timeList.Any(lambda => lambda > lyricsTime)
+                                                ? timeList.Last(lambda => lambda < lyricsTime)
+                                               : timeList.Last()
                        ));
+                    }
+                    catch { }
                     Timers.Clear();
                     foreach (var item in timeList.FindAll(lambda => lambda > lyricsTime && lambda - lyricsTime < cycle))
                     {
@@ -104,11 +147,11 @@ namespace MusicPlayerWithLyrics
                             Timers.Add(Timer);
                             Timers.First(lambda => (int)lambda.Tag == timeList.IndexOf(item)).Start();
                         }
-                        catch (Exception err) { WriteErrLog(err.Message); }
+                        catch (Exception err) { WriteErrLog(err.ToString()); }
                     }
                 }
             }
-            catch (Exception err) { WriteErrLog(err.Message); }
+            catch (Exception err) { WriteErrLog(err.ToString()); }
         }
         private void Timer_tick(object sender, EventArgs e)
         {
@@ -119,7 +162,7 @@ namespace MusicPlayerWithLyrics
                 Timers.Remove(((DispatcherTimer)sender));
                 WriteTestLog(LrcLines.Keys[(int)((DispatcherTimer)sender).Tag] + "=>" + LrcLines.Values[(int)((DispatcherTimer)sender).Tag]);
             }
-            catch (Exception err) { WriteErrLog(err.Message); }
+            catch (Exception err) { WriteErrLog(err.ToString()); }
         }
         private void SwitchtoIndex(int index)
         {
@@ -140,13 +183,95 @@ namespace MusicPlayerWithLyrics
         }
         private void ScrollIntoView(object item)
         {
-            if (lyricsWindow.ScrolltoView_able)
+            if (lyricsWindow.ScrolltoViewAble)
             {
                 lyricsWindow.lyricsListBox.ScrollIntoView(item);
             }
         }
+        #region DesktopLyrics
+        public DesktopLyrics desktopLyrics = null;
+        public List<DispatcherTimer> DLTimers = new List<DispatcherTimer>();
+        public void DLRCWindow_Closed(object sender, EventArgs e) => CloseDLRCWindow();
+        public void ChooseDesktopLyrics(TimeSpan lyricsTime, TimeSpan cycle)
+        {
+            try
+            {
+                if (desktopLyrics != null && HaveLrc && timeList != null)
+                {
+                    try
+                    {
+                        SettoIndex(
+                                            timeList.IndexOf
+                                            (timeList.Any(lambda => lambda > lyricsTime)
+                                            ? timeList.Last(lambda => lambda < lyricsTime)
+                                            : timeList.Last()
+                                         ));
+                    }
+                    catch { }
+                    DLTimers.Clear();
+                    foreach (var item in timeList.FindAll(lambda => lambda > lyricsTime && lambda - lyricsTime < cycle))
+                    {
+                        try
+                        {
+                            DispatcherTimer Timer = new DispatcherTimer { Interval = item - lyricsTime, Tag = timeList.IndexOf(item) };
+                            Timer.Tick += new EventHandler(DLTimer_tick);
+                            DLTimers.Add(Timer);
+                            DLTimers.First(lambda => (int)lambda.Tag == timeList.IndexOf(item)).Start();
+                        }
+                        catch (Exception err) { WriteErrLog(err.ToString()); }
+                    }
+                }
+            }
+            catch (Exception err) { WriteErrLog(err.ToString()); }
+        }
+        private int selectedindex = 0;
+        private void SettoIndex(int index)
+        {
+            if (selectedindex != index)
+            {
+                desktopLyrics.Line1.Text = index < timeList.Count && index >= 0
+                    ? LrcLines[timeList[index]]
+                    : null;
+                desktopLyrics.Line2.Text = index + 1 < timeList.Count && index >= 0
+                    ? LrcLines[timeList[index + 1]]
+                    : null;
+                desktopLyrics.Line1.Foreground = Settings.desktopLine1FontColor;
+                desktopLyrics.Line1.FontStyle = Settings.desktopLine1FontStyle;
+                desktopLyrics.Line1.FontWeight = Settings.desktopLine1FontWeight;
+                desktopLyrics.Line1.FontSize = Settings.desktopLine1FontSize;
+                desktopLyrics.Line2.Foreground = Settings.desktopLine2FontColor;
+                desktopLyrics.Line2.FontStyle = Settings.desktopLine2FontStyle;
+                desktopLyrics.Line2.FontWeight = Settings.desktopLine2FontWeight;
+                desktopLyrics.Line2.FontSize = Settings.desktopLine2FontSize;
+               
+                desktopLyrics.Line1.HorizontalAlignment = Settings.HorizontalContentAlignment;
+                desktopLyrics.Line2.HorizontalAlignment = Settings.HorizontalContentAlignment;
+              
+
+                selectedindex = index;
+            }
+        }
+
+        private void DLTimer_tick(object sender, EventArgs e)
+        {
+            try
+            {
+                ((DispatcherTimer)sender).IsEnabled = false;
+                SettoIndex((int)((DispatcherTimer)sender).Tag);
+                DLTimers.Remove((DispatcherTimer)sender);
+               WriteTestLog(LrcLines.Keys[(int)((DispatcherTimer)sender).Tag] + "=>" + LrcLines.Values[(int)((DispatcherTimer)sender).Tag]);
+            }
+            catch (Exception err) { WriteErrLog(err.ToString()); }
+        }
+
+        public void CloseDLRCWindow()
+        {
+            desktopLyrics.Close();
+            desktopLyrics = null;
+        }
+
+        #endregion
         #region LogWindow
-        public LogOutput logWindow = null;
         //public void CloseLogWindow(object sender, EventArgs e) { CloseWindow(); }
         //public void CloseWindow()
         //{
@@ -155,20 +280,20 @@ namespace MusicPlayerWithLyrics
         //}
         public void ShowLogWindow()
         {
-            if (logWindow == null || logWindow.IsDisposed)
+            if (LogWindow == null || LogWindow.IsDisposed)
             {
-                logWindow = new LogOutput()
+                LogWindow = new LogOutput()
                 {
                     StartPosition = FormStartPosition.CenterScreen
                 };
-                logWindow.Show();
+                LogWindow.Show();
 
             }
             else
             {
-                logWindow.Activate();
+                LogWindow.Close();
+                LogWindow.Dispose();
             }
-
 
             //logWindow.IsDisposed
             //logWindow = new LogOutput();
@@ -189,26 +314,32 @@ namespace MusicPlayerWithLyrics
         public void WriteLog(int text) => WriteLog(Convert.ToString(text));
         public void WriteLog(string text)
         {
-            if (!(logWindow == null || logWindow.IsDisposed))
+            if (!(LogWindow == null || LogWindow.IsDisposed))
             {
-                logWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.ToString("hh:mm:ss") + "_INFO>" + text);
+                LogWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.ToString("hh:mm:ss") + "_INFO>" + text);
             }
         }
         public void WriteTestLog(int text) => WriteTestLog(Convert.ToString(text));
         public void WriteTestLog(string text)
         {
-            if (!(logWindow == null || logWindow.IsDisposed))
+            if (!(LogWindow == null || LogWindow.IsDisposed))
             {
-                logWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.TimeOfDay + "_TEST>" + text, System.Drawing.Color.Blue);
+                LogWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.TimeOfDay + "_TEST>" + text, System.Drawing.Color.Blue);
             }
         }
         public void WriteErrLog(string text)
         {
-            if (!(logWindow == null || logWindow.IsDisposed))
+            if (!(LogWindow == null || LogWindow.IsDisposed))
             {
-                logWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.ToString("hh:mm:ss") + "_ERROR>" + text, System.Drawing.Color.Red);
+                LogWindow.AddLog(Environment.NewLine + "|" + DateTime.Now.ToString("hh:mm:ss") + "_ERROR>" + text, System.Drawing.Color.Red);
             }
         }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
+
     }
 }

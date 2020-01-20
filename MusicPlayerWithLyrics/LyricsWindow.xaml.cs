@@ -1,19 +1,11 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MusicPlayerWithLyrics
 {
@@ -42,29 +34,20 @@ namespace MusicPlayerWithLyrics
             lyricsListBox.IsEnabled = true;
             ((Grid)sender).Cursor = Cursors.Arrow;
         }
-
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
-
             if (((ToggleButton)sender).IsChecked == true)
             {
-                ((PackIcon)((ToggleButton)sender).Content).Kind = PackIconKind.ImageSizeSelectSmall;
+                ((PackIcon)((ToggleButton)sender).Content).Kind = PackIconKind.ArrowCollapseAll;
                 WindowState = WindowState.Maximized;
-            }
-            else if (((ToggleButton)sender).IsChecked == false)
-            {
-                ((PackIcon)((ToggleButton)sender).Content).Kind = PackIconKind.WindowRestore;
-                WindowState = WindowState.Normal;
             }
             else
             {
-                ((PackIcon)((ToggleButton)sender).Content).Kind = PackIconKind.Resize;
+                ((PackIcon)((ToggleButton)sender).Content).Kind = PackIconKind.ArrowExpandAll;
                 WindowState = WindowState.Normal;
             }
         }
-
         private void Close_Button_Click(object sender, RoutedEventArgs e) => CloseWindow();
-
         public void CloseWindow() => Close();
         private int selectedIndex = 0;
         private void LyricsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -76,19 +59,21 @@ namespace MusicPlayerWithLyrics
                     ((ListBoxItem)(((ListBox)sender).Items[selectedIndex])).FontSize = defaultLyricsStyle.FontSize;
                     ((ListBoxItem)(((ListBox)sender).Items[selectedIndex])).FontStyle = defaultLyricsStyle.FontStyle;
                     ((ListBoxItem)(((ListBox)sender).Items[selectedIndex])).FontWeight = defaultLyricsStyle.FontWeight;
+                    ((ListBoxItem)(((ListBox)sender).Items[selectedIndex])).Foreground = defaultLyricsStyle.Foreground;
                 }
                 selectedIndex = ((ListBox)sender).SelectedIndex;
                 ((ListBoxItem)(((ListBox)sender).SelectedItem)).FontSize = selectedLyricsStyle.FontSize;
                 ((ListBoxItem)(((ListBox)sender).SelectedItem)).FontStyle = selectedLyricsStyle.FontStyle;
                 ((ListBoxItem)(((ListBox)sender).SelectedItem)).FontWeight = selectedLyricsStyle.FontWeight;
+                ((ListBoxItem)(((ListBox)sender).SelectedItem)).Foreground = selectedLyricsStyle.Foreground;
             }
             catch { }
         }
-        public bool ScrolltoView_able = true;
+        public bool ScrolltoViewAble { get; set; } = true;
         private Timer exitScrollBlock = new Timer();
         private void LyricsListBox_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            ScrolltoView_able = false;
+            ScrolltoViewAble = false;
             exitScrollBlock.Stop();
             exitScrollBlock.Dispose();
             exitScrollBlock = new Timer() { Interval = 2000, AutoReset = false, Enabled = true };
@@ -96,7 +81,7 @@ namespace MusicPlayerWithLyrics
         }
         private void Exit_Scroll_Block(object sender, EventArgs e)
         {
-            ScrolltoView_able = true;
+            ScrolltoViewAble = true;
             ((Timer)sender).Close();
             ((Timer)sender).Dispose();
         }
@@ -106,8 +91,8 @@ namespace MusicPlayerWithLyrics
             //{
             if (SettingStackPanel.SelectedIndex >= 0)
             {
-                ((ListBoxItem)FontStyle.Items[0]).IsSelected = ((ListBoxItem)SettingStackPanel.SelectedItem).FontWeight == FontWeights.Bold;
-                ((ListBoxItem)FontStyle.Items[1]).IsSelected = ((ListBoxItem)SettingStackPanel.SelectedItem).FontStyle == FontStyles.Italic;
+                ((ListBoxItem)SettingFontStyle.Items[0]).IsSelected = ((ListBoxItem)SettingStackPanel.SelectedItem).FontWeight == FontWeights.Bold;
+                ((ListBoxItem)SettingFontStyle.Items[1]).IsSelected = ((ListBoxItem)SettingStackPanel.SelectedItem).FontStyle == FontStyles.Italic;
                 for (int i = 0; i < ChooseFontSize.Items.Count; i++)
                 {
                     try
@@ -130,7 +115,6 @@ namespace MusicPlayerWithLyrics
             //}
             //catch { }
         }
-
         private void LyricsParagraph_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -150,12 +134,11 @@ namespace MusicPlayerWithLyrics
         {
             try
             {
-                ((ListBoxItem)SettingStackPanel.SelectedItem).FontWeight = ((ListBoxItem)FontStyle.Items[0]).IsSelected ? FontWeights.Bold : FontWeights.Normal;
-                ((ListBoxItem)SettingStackPanel.SelectedItem).FontStyle = ((ListBoxItem)FontStyle.Items[1]).IsSelected ? FontStyles.Italic : FontStyles.Normal;
+                ((ListBoxItem)SettingStackPanel.SelectedItem).FontWeight = ((ListBoxItem)SettingFontStyle.Items[0]).IsSelected ? FontWeights.Bold : FontWeights.Normal;
+                ((ListBoxItem)SettingStackPanel.SelectedItem).FontStyle = ((ListBoxItem)SettingFontStyle.Items[1]).IsSelected ? FontStyles.Italic : FontStyles.Normal;
             }
             catch { }
         }
-
         private void ChooseFontSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -164,15 +147,21 @@ namespace MusicPlayerWithLyrics
             }
             catch { }
         }
-
         private void Color_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
         {
-
+            if (!Equals(eventArgs.Parameter, true)) return;
+            ((ListBoxItem)SettingStackPanel.SelectedItem).Foreground = new SolidColorBrush(FoneColorPicker.Color/*Color.FromRgb(1, 1, 1)*/);
         }
-
         private void OpenColorDialogButton(object sender, RoutedEventArgs e)
         {
             ColorChooseDialog.IsOpen = true;
         }
+        private void OpenSetting_Button_Click(object sender, RoutedEventArgs e)
+        {
+            drawerHost.IsLeftDrawerOpen = false;
+        }
+
+
+        
     }
 }

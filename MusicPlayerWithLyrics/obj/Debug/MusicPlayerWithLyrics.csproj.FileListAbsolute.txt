@@ -25,3 +25,6 @@ C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debu
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\LyricsWindow.g.cs
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\LyricsWindow.baml
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\MusicPlayerWithLyrics.LogOutput.resources
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\DesktopLyrics.g.cs
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\DesktopLyrics.baml
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Debug\GeneratedInternalTypeHelper.g.cs

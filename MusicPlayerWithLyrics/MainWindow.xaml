@@ -47,8 +47,12 @@
 
                         <StackPanel  Margin="10">
 
-                            <MediaElement Name="mediaElement" MediaOpened="MediaElement_MediaOpened" Volume="0.5" LoadedBehavior="Manual"
-                                          Visibility="Hidden"/>
+                            <MediaElement Name="mediaElement" MediaOpened="MediaElement_MediaOpened" Volume="0.5" LoadedBehavior="Manual" Visibility="Hidden" MediaEnded="MediaElement_MediaEnded"/>
+                            <StackPanel Orientation="Horizontal" Height="40" HorizontalAlignment="Center">
+                                <Button x:Name="openDir" Content="Open Directory"  Click="OpenDir_Click"/>
+                                <Grid Width="5"/>
+                                <Button x:Name="openBtn" Content="Open File"  Click="OpenBtn_Click"/>
+                            </StackPanel>
                             <Grid  Margin="0">
                                 <TextBlock x:Name="positionTimeEcho" HorizontalAlignment="Left" Width="70" Text="00:00:00"/>
                                 <Slider x:Name="sliderPosition"  VerticalAlignment="Top" Margin="55,0,0,0" 
@@ -60,11 +64,36 @@
 
 
 
+
                             <StackPanel Orientation="Horizontal" Height="40" HorizontalAlignment="Center">
-                                <Button x:Name="openBtn" Content="Open File"  Click="OpenBtn_Click"/>
-                                <Button x:Name="playBtn" Content="Play"  Click="PlayBtn_Click"/>
-                                <Button x:Name="backBtn" Content="Back"  Click="BackBtn_Click"/>
-                                <Button x:Name="forwardBtn" Content="Forward"  Click="ForwardBtn_Click"/>
+                                <ToggleButton materialDesign:ShadowAssist.ShadowDepth="Depth2" x:Name="playBtn" Height="40" Width="40"  Click="PlayBtn_Click" Style="{StaticResource MaterialDesignActionToggleButton}"  ToolTip="播放模式" >
+                                    <ToggleButton.Content>
+                                        <materialDesign:PackIcon   Kind="Play" />
+                                    </ToggleButton.Content>
+                                    <materialDesign:ToggleButtonAssist.OnContent>
+                                        <materialDesign:PackIcon  Kind="Pause" />
+                                    </materialDesign:ToggleButtonAssist.OnContent>
+                                </ToggleButton>
+
+                                <Grid Width="5"/>
+                                <Button x:Name="backBtn"  Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Click="BackBtn_Click" >
+                                    <materialDesign:PackIcon Kind="Rewind10" Height="24" Width="24"/>
+                                </Button>
+                                <Grid Width="5"/>
+                                <Button x:Name="forwardBtn" Style="{StaticResource MaterialDesignFloatingActionMiniButton}"  Click="ForwardBtn_Click">
+                                    <materialDesign:PackIcon Kind="FastForward10" Height="24" Width="24"/>
+                                </Button>
+                                <Grid Width="5"/>
+
+                                <ToggleButton materialDesign:ShadowAssist.ShadowDepth="Depth2" x:Name="playMode" Height="40" Width="40"  Style="{StaticResource MaterialDesignActionToggleButton}"  ToolTip="播放模式">
+                                    <ToggleButton.Content>
+                                        <materialDesign:PackIcon   Kind="FormatIndentIncrease" />
+                                    </ToggleButton.Content>
+                                    <materialDesign:ToggleButtonAssist.OnContent>
+                                        <materialDesign:PackIcon  Kind="RepeatOne" />
+                                    </materialDesign:ToggleButtonAssist.OnContent>
+                                </ToggleButton>
+
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
@@ -73,20 +102,20 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="saveIntButton" Content="保存配置" FontSize="16" Click="SaveIntButton_Click" />
                             <Grid Width="5"/>
 
                             <Button x:Name="do_backup" Content="日志窗口" FontSize="16" Click="Do_backup_Click"  />
                             <Grid Width="5"/>
-                            <Button Content="清屏" FontSize="16" Click="Clear_log"  />
-                            <Grid Width="5"/>
                             <Button Content="歌词窗口" FontSize="16" Click="ShowLyricsWin_StateChange"/>
+                            <Grid Width="5"/>
+                            <Button Content="桌面歌词" FontSize="16" Click="ShowDesktopLyricsWin_StateChange"/>
                         </StackPanel>
                     </StackPanel>
                     <Separator/>
                 </StackPanel>
-                <RichTextBox x:Name="logOutput" Block.LineHeight="1" VerticalScrollBarVisibility="Visible" Margin="0,160,0,0" IsReadOnly="True" />
+                <ListBox x:Name="FilesList" Block.LineHeight="1" Margin="0,160,0,0" SelectionChanged="FilesList_SelectionChanged"/>
             </Grid>
         </materialDesign:Card>
         <!--#region 侧滑栏 -->

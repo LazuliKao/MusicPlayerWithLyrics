@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerWithLyrics"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:Elements.Converters"
         mc:Ignorable="d"
         Title="LyricsWindow" Height="400" Width="500"
         ResizeMode="CanResizeWithGrip"
@@ -24,194 +24,344 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MaterialDesignListBoxItem}" >
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Margin="{TemplateBinding Margin}"
+                            ClipToBounds="{TemplateBinding ClipToBounds}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.6" To="Normal">
+                                                <VisualTransition.GeneratedEasingFunction>
+                                                    <CircleEase EasingMode="EaseOut"/>
+                                                </VisualTransition.GeneratedEasingFunction>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState Name="Normal"/>
+                                        <VisualState Name="MouseOver">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="MouseOverBorder" Storyboard.TargetProperty="Opacity"
+                                                             To=".15" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Disabled"/>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup Name="SelectionStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.2"/>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState Name="Selected">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To=".17" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Unselected"/>
+                                        <VisualState Name="SelectedUnfocused">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To=".15" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid>
+                                    <Border x:Name="MouseOverBorder"
+                                    Opacity="0"
+                                    Background="{TemplateBinding Foreground}"/>
+
+                                    <Border x:Name="SelectedBorder"
+                                    Opacity="0"
+                                    Background="{TemplateBinding Foreground}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <ScaleTransform ScaleX="1"/>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                    <materialDesign:Ripple Feedback="{TemplateBinding Foreground}"
+                                        Focusable="False"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Padding="{TemplateBinding Padding}"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value=".56" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <!--<Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Margin="{TemplateBinding Margin}"
+                            ClipToBounds="{TemplateBinding ClipToBounds}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.5" To="Normal">
+                                                <VisualTransition.GeneratedEasingFunction>
+                                                    <CircleEase EasingMode="EaseOut"/>
+                                                </VisualTransition.GeneratedEasingFunction>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState Name="Normal"/>
+                                        <VisualState Name="MouseOver">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="MouseOverBorder" Storyboard.TargetProperty="Opacity"
+                                                         To=".15" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Disabled"/>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup Name="SelectionStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition From="*" To="Selected">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SelectedBackgroundBorder">
+                                                        <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="*" To="SelectedUnfocused">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SelectedBackgroundBorder">
+                                                        <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="Selected" To="Unselected">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="SelectedBackgroundBorder"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             To="0" Duration="0"/>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState Name="Selected">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBackgroundBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0"/>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Unselected"/>
+                                        <VisualState Name="SelectedUnfocused">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBackgroundBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0"/>
+                                                <DoubleAnimation Storyboard.TargetName="SelectedBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid>
+                                    <Border x:Name="MouseOverBorder"
+                                    Opacity="0"
+                                    Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}"/>
+                                    <Border x:Name="SelectedBackgroundBorder"
+                                    Opacity="0"
+                                    Background="{DynamicResource MaterialDesignDivider}" />
+                                    <materialDesign:Ripple x:Name="Ripple" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}"
+                                        Opacity="1"
+                                        Focusable="False"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Padding="{TemplateBinding Padding}">
+                                    </materialDesign:Ripple>
+                                    <Border x:Name="SelectedBorder"
+                                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=SelectionMode, Converter={StaticResource EqualityToVisibilityConverter}, ConverterParameter={x:Static SelectionMode.Extended}, Mode=OneWay}"
+                                    Opacity="0"
+                                    BorderThickness="0"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}" />
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value=".56" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>-->
+
+            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Slider.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                    <converters:FontColorBindingConverter x:Key="FontColorBindingConverter" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
-
-
-        <ListBox x:Name="lyricsListBox"  Margin="0,50,0,0" SelectionChanged="LyricsListBox_SelectionChanged" MouseMove="LyricsListBox_PreviewMouseMove" MouseWheel="LyricsListBox_PreviewMouseMove"/>
-        <!--<ScrollBar x:Name="lyricsListBoxScrollBar" Margin="0,50,0,0" HorizontalAlignment="Right"/>-->
-        <Grid>
-            <materialDesign:DrawerHost  x:Name="drawerHost" IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}" IsTopDrawerOpen="{Binding ElementName=SettingToggleButton, Path=IsChecked}">
-                <Grid Height="{Binding ActualHeight, ElementName=root}" Width="{Binding ActualWidth, ElementName=root}">
-
-
-
-
-                    <materialDesign:ColorZone x:Name="titleBar" Mode="PrimaryDark" Height="50" Padding="2">
-                        <Grid >
-                            <Grid>
-                                <ToggleButton x:Name="MenuToggleButton"  Margin="10,0,0,0" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignHamburgerToggleButton}"  Cursor="Hand"/>
-                                <Grid Margin="50,0,100,0" MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
-                                    <TextBlock Text="{Binding Title,ElementName=lyricsEchoWin}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <Grid x:Name="LyricsContent">
+            <ListBox x:Name="lyricsListBox" HorizontalContentAlignment="Center" Margin="0,50,0,0" SelectionChanged="LyricsListBox_SelectionChanged" MouseMove="LyricsListBox_PreviewMouseMove" MouseWheel="LyricsListBox_PreviewMouseMove"/>
+            <Grid>
+                <materialDesign:DrawerHost  x:Name="drawerHost" IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}" IsTopDrawerOpen="{Binding ElementName=SettingToggleButton, Path=IsChecked}" TopDrawerBackground="{x:Null}">
+                    <Grid Height="{Binding ActualHeight, ElementName=root}" Width="{Binding ActualWidth, ElementName=root}">
+                        <materialDesign:ColorZone x:Name="titleBar" Mode="PrimaryDark" Height="50" Padding="2">
+                            <Grid >
+                                <Grid>
+                                    <ToggleButton x:Name="MenuToggleButton"  Margin="10,0,0,0" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignHamburgerToggleButton}"  Cursor="Hand"/>
+                                    <Grid Margin="50,0,100,0" MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
+                                        <TextBlock Text="{Binding Title,ElementName=lyricsEchoWin}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <ToggleButton Height="50" Width="50" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="WindowSize" Padding="0" Click="ToggleButton_Click" IsThreeState="True">
-                                    <materialDesign:PackIcon Kind="ImageSizeSelectSmall" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
-                                </ToggleButton>
-                                <Button Height="50" Width="50"  Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Close" Padding="0" Click="Close_Button_Click">
-                                    <materialDesign:PackIcon Kind="CloseBoxOutline" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-
-                    </materialDesign:ColorZone>
-
-                </Grid>
-                <materialDesign:DrawerHost.LeftDrawerContent>
-                    <Grid>
-                        <StackPanel Margin="16,0">
-                            <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" DockPanel.Dock="Top" HorizontalAlignment="Right" IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" Cursor="{Binding Cursor, ElementName=MenuToggleButton}" />
-                            <TextBlock Margin="4" HorizontalAlignment="Center" Text="Menu" />
-                            <Separator/>
-                            <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"  CommandParameter="{x:Static Dock.Top}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Settings" />
-                            <Button Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Close" />
-                        </StackPanel>
-                        <materialDesign:MaterialDateDisplay VerticalAlignment="Bottom" Margin="5,0,0,0" Opacity="0.5"/>
-                    </Grid>
-                </materialDesign:DrawerHost.LeftDrawerContent>
-                
-                
-                
-                <materialDesign:DrawerHost.TopDrawerContent>
-                 
-                    
-                    
-                    <Grid>
-
-
-
-
-
-
-
-
-
-
-
-                        <materialDesign:DialogHost x:Name="ColorChooseDialog" DialogClosing="Color_DialogHost_OnDialogClosing" HorizontalAlignment="Center" VerticalAlignment="Center" Height="{Binding ActualHeight, ElementName=lyricsEchoWin}">
-                            <materialDesign:DialogHost.DialogContent>
-                                <StackPanel Margin="16">
-                                    <TextBlock Text="Choose Font Color."/>
-                               <materialDesign:ColorPicker Margin="0,10,0,0" x:Name="FoneColorPicker" Height="200 " Width="200"  Grid.Column="1" />
-                                    <Separator/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
-                                            <Button.CommandParameter>
-                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">True</system:Boolean>
-                                            </Button.CommandParameter> ACCEPT
-                                        </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
-                                            <Button.CommandParameter>
-                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">False</system:Boolean>
-                                            </Button.CommandParameter> CANCEL
-                                        </Button>
-                                    </StackPanel>
-                                    
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <ToggleButton Height="50" Width="50" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="WindowSize" Padding="0" Click="ToggleButton_Click">
+                                        <materialDesign:PackIcon Kind="ArrowExpandAll" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                                    </ToggleButton>
+                                    <Button Height="50" Width="50"  Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Close" Padding="0" Click="Close_Button_Click">
+                                        <materialDesign:PackIcon Kind="CloseBoxOutline" Width="40" Height="{Binding Width, Mode=OneWay, RelativeSource={RelativeSource Self}}" Foreground="White" />
+                                    </Button>
                                 </StackPanel>
-                            </materialDesign:DialogHost.DialogContent>
-                            <Border BorderThickness="1" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Width="{Binding ActualWidth,ElementName=lyricsEchoWin}" ClipToBounds="True">
-                                <Grid Height="{Binding ActualHeight, ElementName=lyricsEchoWin}">
+                            </Grid>
 
-                                    <StackPanel>
-                                        <Grid  MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
-                                            <TextBlock Margin="0,10,10,0" HorizontalAlignment="Center" Text="Settings" FontSize="20" Foreground="White"/>
-                                        </Grid>
+                        </materialDesign:ColorZone>
+
+                    </Grid>
+                    <materialDesign:DrawerHost.LeftDrawerContent>
+                        <Grid>
+                            <StackPanel Margin="16,0">
+                                <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" DockPanel.Dock="Top" HorizontalAlignment="Right" IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" Cursor="{Binding Cursor, ElementName=MenuToggleButton}" />
+                                <TextBlock Margin="4" HorizontalAlignment="Center" Text="Menu" />
+                                <Separator/>
+                                <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"  CommandParameter="{x:Static Dock.Top}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Settings" Click="OpenSetting_Button_Click"/>
+                                <Button Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}" Margin="4" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignFlatButton}" Content="Close" />
+                            </StackPanel>
+                            <materialDesign:MaterialDateDisplay VerticalAlignment="Bottom" Margin="5,5,10,0" Opacity="0.5"/>
+                        </Grid>
+                    </materialDesign:DrawerHost.LeftDrawerContent>
+                    <materialDesign:DrawerHost.TopDrawerContent>
+                        <Grid>
+                            <materialDesign:DialogHost x:Name="ColorChooseDialog" DialogClosing="Color_DialogHost_OnDialogClosing" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                <materialDesign:DialogHost.DialogContent>
+                                    <StackPanel Margin="16">
+                                        <TextBlock Text="Choose Font Color."/>
+                                        <materialDesign:ColorPicker Margin="0,10,0,0" x:Name="FoneColorPicker" Height="200 " Width="200"  Grid.Column="1" Color="{Binding SelectedItem, ElementName=SettingStackPanel, Converter={StaticResource FontColorBindingConverter}}"/>
                                         <Separator/>
-                                        <ToolBarTray>
-                                            <ToolBar Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False">
-                                                <ListBox x:Name="LyricsParagraph" SelectedIndex="1" ToolTip="调整歌词水平对齐方式" SelectionChanged="LyricsParagraph_SelectionChanged">
-                                                    <ListBoxItem>
-                                                        <materialDesign:PackIcon Kind="FormatAlignLeft" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <materialDesign:PackIcon Kind="FormatAlignCenter" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <materialDesign:PackIcon Kind="FormatAlignRight" />
-                                                    </ListBoxItem>
-                                                    <!--<ListBoxItem><materialDesign:PackIcon Kind="FormatAlignJustify" /></ListBoxItem>-->
-                                                </ListBox>
-                                                <Separator />
-                                                <ListBox x:Name="FontStyle" SelectionMode="Extended" ToolTip ="文字样式" MouseUp="FontStyle_MouseUp">
-                                                    <ListBoxItem>
-                                                        <materialDesign:PackIcon Kind="FormatBold" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <materialDesign:PackIcon Kind="FormatItalic" />
-                                                    </ListBoxItem>
-                                                </ListBox>
-                                                <Separator />
-                                                <StackPanel ToolTip ="字体大小" Orientation="Horizontal">
-                                                    <Label Content="Font size:" VerticalAlignment="Center" />
-                                                    <ComboBox x:Name="ChooseFontSize" SelectionChanged="ChooseFontSize_SelectionChanged">
-                                                        <ComboBoxItem Content="12" IsSelected="True"/>
-                                                    </ComboBox>
-                                                </StackPanel>
-                                                <Separator />
-                                                <Button Style="{StaticResource MaterialDesignIconButton}" Foreground="Black"  Click="OpenColorDialogButton">
-                                                    <Grid>
-                                                    <materialDesign:PackIcon Kind="FormatColorText" Height="30" Width="30"/>
-                                                    <materialDesign:PackIcon Kind="ColorHelper" Margin="3" Height="24" Width="24"/></Grid>
-                                                </Button>
-                                            </ToolBar>
-                                        </ToolBarTray>
-                                        <Separator/>
-                                        <ListBox SelectedIndex="0" Margin="16,0" x:Name="SettingStackPanel" SelectionChanged="SettingStackPanel_SelectionChanged">
-                                            <ListBoxItem x:Name="selectedLyricsStyle" FontSize="22" Content="selectLyricsStyle"/>
-                                            <ListBoxItem x:Name="defaultLyricsStyle" FontSize="12" Content="defaultLyricsStyle" />
-                                        </ListBox>
-                                     
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                                <Button.CommandParameter>
+                                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">True</system:Boolean>
+                                                </Button.CommandParameter> CONFIRM
+                                            </Button>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                                <Button.CommandParameter>
+                                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">False</system:Boolean>
+                                                </Button.CommandParameter> CANCEL
+                                            </Button>
+                                        </StackPanel>
+
                                     </StackPanel>
+                                </materialDesign:DialogHost.DialogContent>
+                                <Border  BorderThickness="2" BorderBrush="{DynamicResource PrimaryHueMidBrush}" ClipToBounds="True">
+                                    <Grid x:Name="SettingPanel" >
+                                        <Rectangle Fill="White" Opacity=".7"/>
+                                        <StackPanel MaxHeight="{Binding ActualHeight,ElementName=lyricsEchoWin}">
+                                            <Grid  MouseLeftButtonDown="Move_window_MouseLeftButtonDown" Background="{Binding Background, ElementName=titleBar}">
+                                                <TextBlock Margin="0,8,0,5" HorizontalAlignment="Center" Text="Settings" FontSize="20" Foreground="White"/>
+                                            </Grid>
+                                            <Separator/>
+                                            <ToolBarTray  Background="{Binding Background,ElementName=LyricsParagraph}">
+                                                <ToolBar Background="{Binding Background,ElementName=LyricsParagraph}" Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False">
+                                                    <ListBox Background="{x:Null}" x:Name="LyricsParagraph" SelectedIndex="1" ToolTip="调整歌词水平对齐方式" SelectionChanged="LyricsParagraph_SelectionChanged">
+                                                        <ListBoxItem>
+                                                            <materialDesign:PackIcon Kind="FormatAlignLeft" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <materialDesign:PackIcon Kind="FormatAlignCenter" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <materialDesign:PackIcon Kind="FormatAlignRight" />
+                                                        </ListBoxItem>
+                                                        <!--<ListBoxItem><materialDesign:PackIcon Kind="FormatAlignJustify" /></ListBoxItem>-->
+                                                    </ListBox>
+                                                    <Separator />
+                                                    <ListBox Background="{Binding Background,ElementName=LyricsParagraph}" x:Name="SettingFontStyle" SelectionMode="Extended" ToolTip ="文字样式" MouseUp="FontStyle_MouseUp">
+                                                        <ListBoxItem>
+                                                            <materialDesign:PackIcon Kind="FormatBold" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <materialDesign:PackIcon Kind="FormatItalic" />
+                                                        </ListBoxItem>
+                                                    </ListBox>
+                                                    <Separator />
+                                                    <StackPanel ToolTip ="字体大小" Orientation="Horizontal">
+                                                        <Label Content="Font size:" VerticalAlignment="Center" />
+                                                        <ComboBox x:Name="ChooseFontSize" SelectionChanged="ChooseFontSize_SelectionChanged">
+                                                            <ComboBoxItem Content="12" IsSelected="True"/>
+                                                        </ComboBox>
+                                                    </StackPanel>
+                                                    <Separator />
+                                                    <Button Style="{StaticResource MaterialDesignIconButton}" Foreground="Black"  Click="OpenColorDialogButton">
+                                                        <Grid>
+                                                            <materialDesign:PackIcon Kind="FormatColorText" Height="30" Width="30"/>
+                                                            <materialDesign:PackIcon x:Name="FontColorPreview" Foreground="{Binding Color, ElementName=FoneColorPicker, Converter={StaticResource ColorToBrushConverter}}"  Kind="ColorHelper" Margin="2.8" Height="24" Width="24"/>
+                                                        </Grid>
+                                                    </Button>
+                                                </ToolBar>
+                                            </ToolBarTray>
+                                            <Separator/>
+                                            <ListBox Margin="16,0,16,25" MaxHeight="{Binding ActualHeight, ElementName=SettingStackPanelHeight}" SelectedIndex="0" HorizontalContentAlignment="Center"  x:Name="SettingStackPanel" SelectionChanged="SettingStackPanel_SelectionChanged">
+                                                <ListBoxItem x:Name="selectedLyricsStyle" FontSize="22" Content="歌词窗口选中(当前)歌词样式" Background="{Binding Background,ElementName=lyricsListBox}" />
+                                                <ListBoxItem x:Name="defaultLyricsStyle" FontSize="12" Content="歌词窗口默认(等待)歌词样式"  Background="{Binding Background,ElementName=lyricsListBox}" />
+                                                <ListBoxItem x:Name="desktopLyrics1Style" FontSize="26" Content="桌面歌词第一行样式"   Background="{Binding Background,ElementName=lyricsListBox}"/>
+                                                <ListBoxItem x:Name="desktopLyrics2Style" FontSize="20" Content="桌面歌词第二行样式"  Background="{Binding Background,ElementName=lyricsListBox}" />
+                                           
+                                            </ListBox>
 
-
-
-   <ToggleButton VerticalAlignment="Bottom"  Margin="16,0" x:Name="SettingToggleButton"  Width="{Binding ActualWidth, ElementName=SettingStackPanel}" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignFlatButton}"               Cursor="Hand" Height="25" Padding="0">
+                                        </StackPanel>
+                                        <ToggleButton VerticalAlignment="Bottom"  Margin="16,0" x:Name="SettingToggleButton"  Width="{Binding ActualWidth, ElementName=SettingStackPanel}" HorizontalAlignment="Left"  Style="{DynamicResource MaterialDesignFlatButton}"               Cursor="Hand" Height="25" Padding="0">
                                             <TextBlock  FontSize="34" FontWeight="Black" Text="︿" Margin="0,-30"/>
                                         </ToggleButton>
+                                        <Grid x:Name="SettingStackPanelHeight" Margin="65" Visibility="Hidden"/>
+                                    </Grid>
+                                </Border>
+                            </materialDesign:DialogHost>
+                        </Grid>
+                    </materialDesign:DrawerHost.TopDrawerContent>
 
+                </materialDesign:DrawerHost>
 
-
-
-
-
-
-
-
-
-
-
-                                </Grid>
-                            </Border>
-                        </materialDesign:DialogHost>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </Grid>
-                </materialDesign:DrawerHost.TopDrawerContent>
-
-            </materialDesign:DrawerHost>
-
+            </Grid>
         </Grid>
     </Grid>
 </Window>
