@@ -8,7 +8,6 @@ using System.Windows.Threading;
 using Forms = System.Windows.Forms;
 using Path = System.IO.Path;
 using System.Windows.Media;
-
 namespace MusicPlayerWithLyrics
 {
     /// <summary>

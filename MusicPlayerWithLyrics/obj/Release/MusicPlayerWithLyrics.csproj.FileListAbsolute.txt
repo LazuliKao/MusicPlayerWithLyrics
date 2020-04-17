@@ -28,3 +28,6 @@ C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Rele
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Release\MusicPlayerWithLyrics.csproj.CopyComplete
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Release\MusicPlayerWithLyrics.exe
 C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\obj\Release\MusicPlayerWithLyrics.pdb
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\bin\Release\MP3ID3v1.dll
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\bin\Release\MP3ID3v1.pdb
+C:\Users\gaoxi\source\repos\MusicPlayerWithLyrics\MusicPlayerWithLyrics\bin\Release\MP3ID3v1.xml

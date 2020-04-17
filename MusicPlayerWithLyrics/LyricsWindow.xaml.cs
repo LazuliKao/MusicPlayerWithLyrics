@@ -67,7 +67,7 @@ namespace MusicPlayerWithLyrics
                 ((ListBoxItem)(((ListBox)sender).SelectedItem)).FontWeight = selectedLyricsStyle.FontWeight;
                 ((ListBoxItem)(((ListBox)sender).SelectedItem)).Foreground = selectedLyricsStyle.Foreground;
             }
-            catch { }
+            catch { selectedIndex = 0; }
         }
         public bool ScrolltoViewAble { get; set; } = true;
         private Timer exitScrollBlock = new Timer();
@@ -162,6 +162,6 @@ namespace MusicPlayerWithLyrics
         }
 
 
-        
+
     }
 }

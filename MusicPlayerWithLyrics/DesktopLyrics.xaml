@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MusicPlayerWithLyrics"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" ResizeMode="CanResizeWithGrip" 
-        Title="DesktopLyrics" MinHeight="50" MinWidth="100" Height="200" Width="500" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}">
+        Title="DesktopLyrics" MinHeight="50" MinWidth="100" Height="200" Width="500" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <Style TargetType="{x:Type ResizeGrip}">
